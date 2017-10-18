@@ -74,8 +74,9 @@ A helper trait is also included in the package for your convenience.
 - #### aggregations($aggs = [], $type = 'click', $index = 'clicktracker')
 - #### search(array $query = [], $options = [], $range, $type = 'click', $index = 'clicktracker')
 
-For full available methods, see file [here](https://github.com/elegisandi/aws-elastic-search-laravel/blob/master/src/ElasticSearch.php)
-For trait helper methods, see file [here](https://github.com/elegisandi/aws-elastic-search-laravel/blob/master/src/Traits/ElasticSearchHelper.php)
+For full available methods, see file [here](https://github.com/elegisandi/aws-elastic-search-laravel/blob/master/src/ElasticSearch.php).
+
+For trait helper methods, see file [here](https://github.com/elegisandi/aws-elastic-search-laravel/blob/master/src/Traits/ElasticSearchHelper.php).
 
 ## Contributing
 

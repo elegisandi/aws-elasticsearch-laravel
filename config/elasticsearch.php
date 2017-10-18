@@ -5,7 +5,7 @@
 | Elasticsearch Configuration
 |--------------------------------------------------------------------------
 |
-| Set your IAB login credentials here.
+| Set your elasticsearch-related configuration here
 |
 */
 

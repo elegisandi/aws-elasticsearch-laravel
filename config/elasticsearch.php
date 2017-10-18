@@ -9,8 +9,6 @@
 |
 */
 
-<?php
-
 return [
     'mappings' => [],
     'settings' => [

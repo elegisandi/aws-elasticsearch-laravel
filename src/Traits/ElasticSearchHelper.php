@@ -188,4 +188,12 @@ trait ElasticSearchHelper
 
         return $date_ranges;
     }
+    
+    /**
+     * @return array
+     */
+    protected function defaultAggregationNames()
+    {
+        return config($this->config)['default_aggregation_names'];
+    }
 }

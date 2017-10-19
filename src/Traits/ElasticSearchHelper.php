@@ -2,6 +2,7 @@
 
 namespace elegisandi\AWSElasticsearchService;
 
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,7 @@ trait ElasticSearchHelper
      * @var string
      */
     protected $config = 'elasticsearch';
-    
+
     /**
      * @param Request $request
      * @param array $defaults
@@ -58,7 +59,7 @@ trait ElasticSearchHelper
         if (!empty($start)) {
             try {
                 $date_range['timestamp']['gte'] = Carbon::parse($start)->startOfDay()->toDateTimeString();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $invalid_start = true;
                 $start = Carbon::now()->subWeek()->toDateString();
             }
@@ -68,7 +69,7 @@ trait ElasticSearchHelper
         if (!empty($end)) {
             try {
                 $date_range['timestamp']['lte'] = Carbon::parse($end)->endOfDay()->toDateTimeString();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $invalid_end = true;
                 $end = Carbon::yesterday()->toDateString();
             }
@@ -176,19 +177,23 @@ trait ElasticSearchHelper
     protected function setAggregationDailyDateRanges($start, $end)
     {
         $date_ranges = [];
-        $from = Carbon::parse($start)->startOfDay()->timestamp;
-        $to = Carbon::parse($end)->endOfDay()->timestamp;
 
-        while ($from <= $to) {
-            $date_ranges[] = [
-                'from' => Carbon::createFromTimestamp($from)->format('M d, Y'),
-                'to' => Carbon::createFromTimestamp($from += 24 * 60 * 60)->format('M d, Y')
-            ];
+        try {
+            $from = Carbon::parse($start)->startOfDay()->timestamp;
+            $to = Carbon::parse($end)->endOfDay()->timestamp;
+
+            while ($from <= $to) {
+                $date_ranges[] = [
+                    'from' => Carbon::createFromTimestamp($from)->format('M d, Y'),
+                    'to' => Carbon::createFromTimestamp($from += 24 * 60 * 60)->format('M d, Y')
+                ];
+            }
+        } catch (Exception $e) {
         }
 
         return $date_ranges;
     }
-    
+
     /**
      * @return array
      */

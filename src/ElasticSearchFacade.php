@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static ElasticSearch getDocument($id, $type = 'click', $index = 'clicktracker')
  * @method static ElasticSearch getSettings($index)
  * @method static ElasticSearch updateSettings(array $settings, $index = 'clicktracker')
+ * @method static ElasticSearch getMappings($index = null, $type = null)
  * @method static ElasticSearch updateMappings(array $properties, $type = 'click', $index = 'clicktracker')
  * @method static ElasticSearch createIndex(array $mappings, array $settings = [], $index = 'clicktracker')
  * @method static ElasticSearch getIndex($index = 'clicktracker')

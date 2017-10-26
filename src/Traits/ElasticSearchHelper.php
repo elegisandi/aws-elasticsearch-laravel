@@ -21,11 +21,12 @@ trait ElasticSearchHelper
      * @param Request $request
      * @param array $defaults
      * @param string $type
-     * @return array|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @return array
      */
     protected function setSearchParams(Request $request, $defaults = [], $type = 'click')
     {
-        $fillables = array_keys(config($this->config)['mappings'][$type]['properties']);
+        $properties = config($this->config)['mappings'][$type]['properties'];
+        $fillables = array_keys($properties);
         $query = array_filter($request->only($fillables));
 
         if ($query && !empty($query['src']) && $query['src'] == 'all') {
@@ -85,6 +86,17 @@ trait ElasticSearchHelper
             $sort = $defaults['sort'];
         }
 
+        // if sort field type is text, check for a keyword type field if any
+        if ($properties[$sort]['type'] == 'text' && $invalid_sort = true && !empty($properties[$sort]['fields'])) {
+            foreach ($properties[$sort]['fields'] as $key => $field) {
+                if ($field['type'] == 'keyword') {
+                    $sort = $sort . '.' . $key;
+                    $invalid_sort = false;
+                    break;
+                }
+            }
+        }
+
         // validate order
         if ($invalid_order = !in_array($order, ['desc', 'asc'])) {
             $order = $defaults['order'];
@@ -96,11 +108,6 @@ trait ElasticSearchHelper
         }
 
         $filters = array_filter(compact('range', 'start', 'end', 'sort', 'order', 'size'));
-
-        // redirect if has invalid value(s)
-        if (!empty($invalid_start) || !empty($invalid_end) || !empty($invalid_sort) || !empty($invalid_order) || !empty($invalid_size)) {
-            return redirect($request->fullUrlWithQuery($filters));
-        }
 
         // search_after
         if (($search_after = $request->input('search_after')) && !is_array($search_after)) {
@@ -120,7 +127,10 @@ trait ElasticSearchHelper
             ]
         );
 
-        return compact('query', 'date_range', 'filters', 'options');
+        // add errors for invalid filters
+        $errors = compact('invalid_start', 'invalid_end', 'invalid_sort', 'invalid_order', 'invalid_size');
+
+        return compact('query', 'date_range', 'filters', 'options', 'errors');
     }
 
     /**

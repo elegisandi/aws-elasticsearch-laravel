@@ -335,7 +335,11 @@ class ElasticSearch
 
             // Send the signed request to Amazon ES
             /** @var \Psr\Http\Message\ResponseInterface $response */
-            $response = $psr7Handler($signedRequest)->wait();
+            $response = $psr7Handler($signedRequest)->then(function (\Psr\Http\Message\ResponseInterface $response) {
+                return $response;
+            }, function ($error) {
+                return $error['response'];
+            })->wait();
 
             // Convert the PSR-7 response to a RingPHP response
             return new \GuzzleHttp\Ring\Future\CompletedFutureArray([

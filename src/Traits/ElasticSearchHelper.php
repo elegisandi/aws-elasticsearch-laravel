@@ -15,7 +15,7 @@ trait ElasticSearchHelper
     /**
      * @var string
      */
-    public $config = 'elasticsearch';
+    protected $config = 'elasticsearch';
 
     /**
      * @param Request $request
@@ -135,7 +135,7 @@ trait ElasticSearchHelper
     }
 
     /**
-     * @param $range
+     * @param string $range
      * @return array
      */
     protected function getDateRange($range)
@@ -181,8 +181,8 @@ trait ElasticSearchHelper
     }
 
     /**
-     * @param $start
-     * @param $end
+     * @param string $start
+     * @param string $end
      * @return array
      */
     protected function setAggregationDailyDateRanges($start, $end)
@@ -315,7 +315,7 @@ trait ElasticSearchHelper
      * @param string $method
      * @param array|null $args
      */
-    public function __call($method, $args)
+    protected function __call($method, $args)
     {
         if (method_exists($this, $method)) {
             $reflection_method = new \ReflectionMethod($this, $method);
@@ -346,10 +346,10 @@ trait ElasticSearchHelper
                                 break;
                         }
                     }
-                }
-
-                return call_user_func_array([$this, $method], $args);
+                }                
             }
+
+            return call_user_func_array([$this, $method], $args);
         }
     }
 }

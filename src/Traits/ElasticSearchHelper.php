@@ -5,6 +5,7 @@ namespace elegisandi\AWSElasticsearchService\Traits;
 use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 /**
  * Trait ElasticSearchHelper
@@ -214,6 +215,22 @@ trait ElasticSearchHelper
     }
 
     /**
+     * @return string
+     */
+    protected function defaultIndex()
+    {
+        return config($this->config)['defaults']['index'];
+    }
+
+    /**
+     * @return string
+     */
+    protected function defaultType()
+    {
+        return config($this->config)['defaults']['type'];
+    }
+
+    /**
      * @param Collection $query
      * @param string $type
      * @return array
@@ -230,14 +247,14 @@ trait ElasticSearchHelper
         $properties = $this->getMappingProperties($type);
 
         // get text type properties
-        $text_type_props = $this->getMappingPropertiesByType($properties, 'text');
+        $text_type_props = $this->getMappingPropertiesByDataType($properties, 'text');
 
         // get keyword type properties
         // we'll include ip type
-        $keyword_type_props = $this->getMappingPropertiesByType($properties, ['keyword', 'ip']);
+        $keyword_type_props = $this->getMappingPropertiesByDataType($properties, ['keyword', 'ip']);
 
         // get boolean type properties
-        $bool_type_props = $this->getMappingPropertiesByType($properties, 'boolean');
+        $bool_type_props = $this->getMappingPropertiesByDataType($properties, 'boolean');
 
         // prepare keyword data type filter
         $term_filter = $this->setBoolQueryClause($query, $keyword_type_props, 'term', 'filter');
@@ -251,8 +268,8 @@ trait ElasticSearchHelper
         });
 
         foreach (compact('term_filter', 'full_text_match', 'bool_filter') as $filter) {
-            foreach ($filter as $occur => $type) {
-                foreach ($type as $field) {
+            foreach ($filter as $occur => $context) {
+                foreach ($context as $field) {
                     $filters[$occur][] = $field;
                 }
             }
@@ -264,25 +281,25 @@ trait ElasticSearchHelper
     /**
      * @param Collection $query
      * @param array $properties
-     * @param string $type
+     * @param string $context
      * @param string $occur
      * @param callable|null $callback
      * @return array
      */
-    protected function setBoolQueryClause(Collection $query, array $properties, $type, $occur, callable $callback = null)
+    protected function setBoolQueryClause(Collection $query, array $properties, $context, $occur, callable $callback = null)
     {
         $data = [];
 
-        $query->only($properties)->each(function ($value, $key) use ($type, $occur, $callback, &$data) {
+        $query->only($properties)->each(function ($value, $key) use ($context, $occur, $callback, &$data) {
             $belongs = $occur;
-
+            
             // all values that starts with exclamation mark (!) is treated as not equal
             if ($value[0] == '!') {
                 $belongs = 'must_not';
                 $value = ltrim($value, '!');
             }
 
-            $data[$belongs][] = [$type => [$key => is_callable($callback) ? $callback($value) : $value]];
+            $data[$belongs][] = [$context => [$key => is_callable($callback) ? $callback($value) : $value]];
         });
 
         return $data;
@@ -290,15 +307,15 @@ trait ElasticSearchHelper
 
     /**
      * @param Collection $properties
-     * @param string|array $type
+     * @param string|array $data_type
      * @return array
      */
-    protected function getMappingPropertiesByType(Collection $properties, $type)
+    protected function getMappingPropertiesByDataType(Collection $properties, $data_type)
     {
-        $types = is_string($type) ? [$type] : $type;
+        $data_types = is_string($data_type) ? [$data_type] : $data_type;
 
-        return $properties->filter(function ($field) use ($types) {
-            return in_array($field['type'], $types);
+        return $properties->filter(function ($field) use ($data_types) {
+            return in_array($field['type'], $data_types);
         })->keys()->all();
     }
 
@@ -327,11 +344,11 @@ trait ElasticSearchHelper
                     if (!isset($args[$position])) {
                         switch ($param->name) {
                             case 'type':
-                                $args[$position] = config($this->config)['defaults']['type'];
+                                $args[$position] = $this->defaultType();
                                 break;
 
                             case 'index':
-                                $args[$position] = config($this->config)['defaults']['index'];
+                                $args[$position] = $this->defaultIndex();
                                 break;
 
                             case 'settings':

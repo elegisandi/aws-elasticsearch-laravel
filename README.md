@@ -125,6 +125,30 @@ AWS Elasticsearch Service for Laravel/Lumen
 
     > returns `Array`
 
+* defaultIndex
+
+    > returns `String`
+
+* defaultType
+
+    > returns `String`
+
+* setSearchQueryFilters(Collection $query, $type = null)
+
+    > returns `Array`
+
+* setBoolQueryClause(Collection $query, array $properties, $context, $occur, callable $callback = null)
+
+    > returns `Array`
+
+* getMappingPropertiesByDataType(Collection $properties, $data_type)
+
+    > returns `Array`
+
+* getMappingProperties($type = null)
+
+    > returns `Collection`
+
 * getDocument($id, $type, $index)
 
     > returns `Array`

@@ -4,6 +4,7 @@ namespace elegisandi\AWSElasticsearchService;
 
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 /**
  * Class ElasticSearchFacade
@@ -15,6 +16,12 @@ use Illuminate\Http\Request;
  * @method static array getDateRange($range)
  * @method static array setAggregationDailyDateRanges($start, $end)
  * @method static array defaultAggregationNames
+ * @method static string defaultIndex
+ * @method static string defaultType
+ * @method static array setSearchQueryFilters(Collection $query, $type = null)
+ * @method static array setBoolQueryClause(Collection $query, array $properties, $context, $occur, callable $callback = null)
+ * @method static array getMappingPropertiesByDataType(Collection $properties, $data_type)
+ * @method static Collection getMappingProperties($type = null)
  * @method static array getDocument($id, $type = null, $index = null)
  * @method static array getSettings($index = null)
  * @method static array updateSettings(array $settings, $index = null)

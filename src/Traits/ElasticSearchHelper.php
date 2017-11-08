@@ -292,7 +292,7 @@ trait ElasticSearchHelper
 
         $query->only($properties)->each(function ($value, $key) use ($context, $occur, $callback, &$data) {
             $belongs = $occur;
-            
+
             // all values that starts with exclamation mark (!) is treated as not equal
             if ($value[0] == '!') {
                 $belongs = 'must_not';
@@ -332,38 +332,45 @@ trait ElasticSearchHelper
      * @param string $method
      * @param array|null $args
      */
-    protected function __call($method, $args)
+    public function __call($method, $args)
     {
         if (method_exists($this, $method)) {
             $reflection_method = new \ReflectionMethod($this, $method);
 
-            if ($reflection_method->getNumberOfRequiredParameters() != count($args)) {
-                foreach ($reflection_method->getParameters() as $param) {
-                    $position = $param->getPosition();
+            foreach ($reflection_method->getParameters() as $param) {
+                $position = $param->getPosition();
 
-                    if (!isset($args[$position])) {
-                        switch ($param->name) {
-                            case 'type':
-                                $args[$position] = $this->defaultType();
-                                break;
+                if (isset($args[$position])) {
+                    continue;
+                }
 
-                            case 'index':
-                                $args[$position] = $this->defaultIndex();
-                                break;
+                if (!$param->isDefaultValueAvailable()) {
+                    switch ($param->name) {
+                        case 'type':
+                            $arg_value = $this->defaultType();
+                            break;
 
-                            case 'settings':
-                                $args[$position] = config($this->config)['settings'];
-                                break;
+                        case 'index':
+                            $arg_value = $this->defaultIndex();
+                            break;
 
-                            case 'mappings':
-                                $args[$position] = config($this->config)['mappings'];
-                                break;
+                        case 'settings':
+                            $arg_value = config($this->config)['settings'];
+                            break;
 
-                            default:
-                                break;
-                        }
+                        case 'mappings':
+                            $arg_value = config($this->config)['mappings'];
+                            break;
+
+                        default:
+                            $arg_value = null;
+                            break;
                     }
-                }                
+                } else {
+                    $arg_value = $param->getDefaultValue();
+                }
+
+                $args[$position] = $arg_value;
             }
 
             return call_user_func_array([$this, $method], $args);

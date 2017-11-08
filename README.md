@@ -17,12 +17,19 @@ AWS Elasticsearch Service for Laravel/Lumen
       
 - Set AWS credentials and Elasticsearch service endpoint in your `.env` file
 
-        AWS_ACCESS_KEY_ID=
-        AWS_SECRET_ACCESS_KEY=
-        AWS_REGION=
-        AWS_ELASTICSEARCH_SERVICE_ENDPOINT=
+        AWS_ACCESS_KEY_ID
+        AWS_SECRET_ACCESS_KEY
+        AWS_REGION
+        AWS_ELASTICSEARCH_SERVICE_ENDPOINT
         
-**If you want to configure mappings and settings of elasticsearch, just run:**
+    Optional .env variables
+    
+        AWS_ELASTICSEARCH_SHARDS
+        AWS_ELASTICSEARCH_REPLICAS
+        AWS_ELASTICSEARCH_INDEX
+        AWS_ELASTICSEARCH_TYPE
+        
+**If you want to configure elasticsearch mappings, settings and/or default type and index, just run:**
 
     php artisan vendor:publish --provider=elegisandi\\AWSElasticsearchService\\ElasticSearchServiceProvider
 
@@ -34,22 +41,21 @@ AWS Elasticsearch Service for Laravel/Lumen
 
 ## Basic Usage
 
-A helper trait is also included in the package for your convenience.
-
     <?php
     
     namespace App;
     
     use elegisandi\AWSElasticsearchService\ElasticSearch;
-    use elegisandi\AWSElasticsearchService\Traits\ElasticSearchHelper;
     
     public function index() {
-        extract($this->setSearchParams(request()));
+        $service = new ElasticSearchService;
+        
+        extract($service->setSearchParams(request()));
 
         $clicks = [];
         $total = 0;
 
-        if ($hits = (new ElasticSearchService)->search($query, $options, $date_range)) {
+        if ($hits = $service->search($query, $options, $date_range)) {
             $clicks = $hits['hits']['hits'];
             $total = $hits['hits']['total'];
         }
@@ -57,26 +63,97 @@ A helper trait is also included in the package for your convenience.
     
 **Using Facade:**
 
-    if ($hits = ElasticSearch::search($query, $options, $date_range)) {
-        $clicks = $hits['hits']['hits'];
-        $total = $hits['hits']['total'];
+    <?php
+        
+    namespace App;
+    
+    use ElasticSearch;
+    
+    public function index() {
+        extract(ElasticSearch::setSearchParams(request()));
+
+        $clicks = [];
+        $total = 0;
+
+        if ($hits = ElasticSearch::search($query, $options, $date_range)) {
+            $clicks = $hits['hits']['hits'];
+            $total = $hits['hits']['total'];
+        }
     }
     
 **For Lumen:**
+
+    <?php
+            
+    namespace App;
     
-    if ($hits = app('elasticsearch')->search($query, $options, $date_range)) {
-        $clicks = $hits['hits']['hits'];
-        $total = $hits['hits']['total'];
+    public function index() {
+        extract(app('elasticsearch')->setSearchParams(request()));
+
+        $clicks = [];
+        $total = 0;
+
+        if ($hits = app('elasticsearch')->search($query, $options, $date_range)) {
+            $clicks = $hits['hits']['hits'];
+            $total = $hits['hits']['total'];
+        }
     }
 
-## Useful Methods
+## Available Methods
 
-- #### aggregations($aggs = [], $type = 'click', $index = 'clicktracker')
-- #### search(array $query = [], $options = [], $range, $type = 'click', $index = 'clicktracker')
+* aggregations(array $aggs, $type, $index)
 
-For full available methods, see file [here](https://github.com/elegisandi/aws-elastic-search-laravel/blob/master/src/ElasticSearch.php).
+    > returns `Array`
 
-For trait helper methods, see file [here](https://github.com/elegisandi/aws-elastic-search-laravel/blob/master/src/Traits/ElasticSearchHelper.php).
+* search(array $query = [], array $options, array $range = [], $type, $index)
+
+    > returns `Array`
+
+* setSearchParams(Request $request, array $defaults = [], $type)
+
+    > returns `Array`
+
+* getDateRange($range)
+
+    > returns `Array`
+    
+* setAggregationDailyDateRanges($start, $end)
+
+    > returns `Array`
+
+* defaultAggregationNames
+
+    > returns `Array`
+
+* getDocument($id, $type, $index)
+
+    > returns `Array`
+
+* getSettings($index = null)
+
+    > returns `Array`
+
+* updateSettings(array $settings, $index)
+
+    > returns `Array`
+
+* getMappings($index, $type)
+
+    > returns `Array`
+
+* updateMappings(array $properties, $type, $index)
+
+    > returns `Array`
+
+* createIndex(array $mappings, array $settings, $index)
+
+* getIndex($index = null)
+
+    > returns `Boolean`
+
+* deleteIndex($index)
+
+    > returns `Array`
 
 ## Contributing
 

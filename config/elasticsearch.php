@@ -12,8 +12,12 @@
 return [
     'mappings' => [],
     'settings' => [
-        'number_of_shards' => 5,
-        'number_of_replicas' => 1
+        'number_of_shards' => env('AWS_ELASTICSEARCH_SHARDS', 5),
+        'number_of_replicas' => env('AWS_ELASTICSEARCH_REPLICAS', 1),
     ],
-    'default_aggregation_names' => [],
+    'defaults' => [
+    	'index' => env('AWS_ELASTICSEARCH_INDEX'),
+    	'type' => env('AWS_ELASTICSEARCH_TYPE'),
+    	'aggregation_names' => [],
+    ],
 ];

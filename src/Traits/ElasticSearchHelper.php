@@ -1,6 +1,6 @@
 <?php
 
-namespace elegisandi\AWSElasticsearchService;
+namespace elegisandi\AWSElasticsearchService\Traits;
 
 use Exception;
 use Carbon\Carbon;
@@ -15,7 +15,7 @@ trait ElasticSearchHelper
     /**
      * @var string
      */
-    protected $config = 'elasticsearch';
+    public $config = 'elasticsearch';
 
     /**
      * @param Request $request
@@ -23,7 +23,7 @@ trait ElasticSearchHelper
      * @param string $type
      * @return array
      */
-    protected function setSearchParams(Request $request, $defaults = [], $type = 'click')
+    private function setSearchParams(Request $request, array $defaults = [], $type)
     {
         $properties = config($this->config)['mappings'][$type]['properties'];
         $fillables = array_keys($properties);
@@ -76,6 +76,7 @@ trait ElasticSearchHelper
             }
         }
 
+        // set timestamp format and timezone if any
         if (!empty($date_range['timestamp'])) {
             $date_range['timestamp']['format'] = 'yyyy-MM-dd HH:mm:ss';
             $date_range['timestamp']['time_zone'] = config('app.timezone');
@@ -209,6 +210,146 @@ trait ElasticSearchHelper
      */
     protected function defaultAggregationNames()
     {
-        return config($this->config)['default_aggregation_names'];
+        return config($this->config)['defaults']['aggregation_names'];
+    }
+
+    /**
+     * @param Collection $query
+     * @param string $type
+     * @return array
+     */
+    protected function setSearchQueryFilters(Collection $query, $type)
+    {
+        $filters = [];
+
+        if ($query->isEmpty()) {
+            return $filters;
+        }
+
+        // get properties
+        $properties = $this->getMappingProperties($type);
+
+        // get text type properties
+        $text_type_props = $this->getMappingPropertiesByType($properties, 'text');
+
+        // get keyword type properties
+        // we'll include ip type
+        $keyword_type_props = $this->getMappingPropertiesByType($properties, ['keyword', 'ip']);
+
+        // get boolean type properties
+        $bool_type_props = $this->getMappingPropertiesByType($properties, 'boolean');
+
+        // prepare keyword data type filter
+        $term_filter = $this->setBoolQueryClause($query, $keyword_type_props, 'term', 'filter');
+
+        // prepare text data type matching
+        $full_text_match = $this->setBoolQueryClause($query, $text_type_props, 'match', 'must');
+
+        // prepare boolean data type filter
+        $bool_filter = $this->setBoolQueryClause($query, $bool_type_props, 'term', 'filter', function ($value) {
+            return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+        });
+
+        foreach (compact('term_filter', 'full_text_match', 'bool_filter') as $filter) {
+            foreach ($filter as $occur => $type) {
+                foreach ($type as $field) {
+                    $filters[$occur][] = $field;
+                }
+            }
+        }
+
+        return $filters;
+    }
+
+    /**
+     * @param Collection $query
+     * @param array $properties
+     * @param string $type
+     * @param string $occur
+     * @param callable|null $callback
+     * @return array
+     */
+    protected function setBoolQueryClause(Collection $query, array $properties, $type, $occur, callable $callback = null)
+    {
+        $data = [];
+
+        $query->only($properties)->each(function ($value, $key) use ($type, $occur, $callback, &$data) {
+            $belongs = $occur;
+
+            // all values that starts with exclamation mark (!) is treated as not equal
+            if ($value[0] == '!') {
+                $belongs = 'must_not';
+                $value = ltrim($value, '!');
+            }
+
+            $data[$belongs][] = [$type => [$key => is_callable($callback) ? $callback($value) : $value]];
+        });
+
+        return $data;
+    }
+
+    /**
+     * @param Collection $properties
+     * @param string|array $type
+     * @return array
+     */
+    protected function getMappingPropertiesByType(Collection $properties, $type)
+    {
+        $types = is_string($type) ? [$type] : $type;
+
+        return $properties->filter(function ($field) use ($types) {
+            return in_array($field['type'], $types);
+        })->keys()->all();
+    }
+
+    /**
+     * @param string $type
+     * @return Collection
+     */
+    protected function getMappingProperties($type)
+    {
+        return collect(config($this->config)['mappings'][$type]['properties']);
+    }
+
+    /**
+     * @param string $method
+     * @param array|null $args
+     */
+    public function __call($method, $args)
+    {
+        if (method_exists($this, $method)) {
+            $reflection_method = new \ReflectionMethod($this, $method);
+
+            if ($reflection_method->getNumberOfRequiredParameters() != count($args)) {
+                foreach ($reflection_method->getParameters() as $param) {
+                    $position = $param->getPosition();
+
+                    if (!isset($args[$position])) {
+                        switch ($param->name) {
+                            case 'type':
+                                $args[$position] = config($this->config)['defaults']['type'];
+                                break;
+
+                            case 'index':
+                                $args[$position] = config($this->config)['defaults']['index'];
+                                break;
+
+                            case 'settings':
+                                $args[$position] = config($this->config)['settings'];
+                                break;
+
+                            case 'mappings':
+                                $args[$position] = config($this->config)['mappings'];
+                                break;
+
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                return call_user_func_array([$this, $method], $args);
+            }
+        }
     }
 }

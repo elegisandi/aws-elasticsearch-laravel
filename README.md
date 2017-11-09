@@ -1,6 +1,8 @@
 # aws-elasticsearch-laravel
 AWS Elasticsearch Service for Laravel/Lumen
 
+**NOTE:** This package only caters search, aggregation, and indexing transactions. Other than that, you can refer to [elasticsearch's official documentation](https://www.elastic.co/guide/en/elasticsearch/client/php-api/index.html).
+
 ## Installation
 
     composer require elegisandi/aws-elasticsearch-laravel

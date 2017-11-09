@@ -3,7 +3,8 @@
 namespace elegisandi\AWSElasticsearchService\Commands;
 
 use Illuminate\Console\Command;
-use elegisandi\AWSElasticsearchService\ElasticSearchFacade;
+use Illuminate\Foundation\Application as LaravelApplication;
+use Laravel\Lumen\Application as LumenApplication;
 
 /**
  * Class CreateIndex
@@ -32,10 +33,18 @@ class CreateIndex extends Command
      */
     public function handle()
     {
-        if ($this->option('reset')) {
-            ElasticSearchFacade::deleteIndex();
-        }
+        if ($this->laravel instanceof LaravelApplication) {
+            if ($this->option('reset')) {
+                \elegisandi\AWSElasticsearchService\ElasticSearchFacade::deleteIndex();
+            }
 
-        ElasticSearchFacade::createIndex();
+            \elegisandi\AWSElasticsearchService\ElasticSearchFacade::createIndex();
+        } elseif ($this->laravel instanceof LumenApplication) {
+            if ($this->option('reset')) {
+                app('elasticsearch')->deleteIndex();
+            }
+
+            app('elasticsearch')->createIndex();
+        }
     }
 }

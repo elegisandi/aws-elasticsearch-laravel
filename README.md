@@ -23,9 +23,6 @@ AWS Elasticsearch Service for Laravel/Lumen
         AWS_SECRET_ACCESS_KEY
         AWS_REGION
         AWS_ELASTICSEARCH_SERVICE_ENDPOINT
-        
-    Optional .env variables
-    
         AWS_ELASTICSEARCH_SHARDS
         AWS_ELASTICSEARCH_REPLICAS
         AWS_ELASTICSEARCH_INDEX
@@ -100,6 +97,17 @@ AWS Elasticsearch Service for Laravel/Lumen
             $total = $hits['hits']['total'];
         }
     }
+
+## Console Commands
+
+* Create Index _(creates the default index)_
+
+    `php artisan elasticsearch:create-index`
+
+    To reset existing index,
+
+    `php artisan elasticsearch:create-index --reset`
+
 
 ## Available Methods
 

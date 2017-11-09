@@ -27,6 +27,12 @@ class ElasticSearchServiceProvider extends ServiceProvider
             $this->app->configure('elasticsearch');
         }
 
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \elegisandi\AWSElasticsearchService\Commands\CreateIndex::class,
+            ]);
+        }
+
         $this->mergeConfigFrom($source, 'elasticsearch');
     }
 

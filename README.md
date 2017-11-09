@@ -15,19 +15,24 @@ AWS Elasticsearch Service for Laravel/Lumen
 
 - Add facade to your `config/app.php` aliases
 
-      elegisandi\AWSElasticsearchService\ElasticSearchFacade::class
+      'ElasticSearch' => elegisandi\AWSElasticsearchService\ElasticSearchFacade::class
       
-- Set AWS credentials and Elasticsearch service endpoint in your `.env` file
+- Set AWS credentials and Elasticsearch config in your `.env` file
 
         AWS_ACCESS_KEY_ID
         AWS_SECRET_ACCESS_KEY
         AWS_REGION
-        AWS_ELASTICSEARCH_SERVICE_ENDPOINT
-        AWS_ELASTICSEARCH_SERVICE_PORT
-        AWS_ELASTICSEARCH_SHARDS
-        AWS_ELASTICSEARCH_REPLICAS
-        AWS_ELASTICSEARCH_INDEX
-        AWS_ELASTICSEARCH_TYPE
+
+        ELASTICSEARCH_ENDPOINT
+        ELASTICSEARCH_PORT
+        ELASTICSEARCH_SHARDS
+        ELASTICSEARCH_REPLICAS
+        ELASTICSEARCH_DEFAULT_INDEX
+        ELASTICSEARCH_DEFAULT_TYPE
+
+    When you are already using aws elasticsearch service, set
+
+        AWS_ELASTICSEARCH_SERVICE=true
         
 **If you want to configure elasticsearch mappings, settings and/or default type and index, just run:**
 
@@ -40,26 +45,6 @@ AWS Elasticsearch Service for Laravel/Lumen
       $app->register(elegisandi\AWSElasticsearchService\ElasticSearchServiceProvider::class);      
 
 ## Basic Usage
-
-    <?php
-    
-    namespace App;
-    
-    use elegisandi\AWSElasticsearchService\ElasticSearch;
-    
-    public function index() {
-        $service = new ElasticSearchService;
-        
-        extract($service->setSearchParams(request()));
-
-        $clicks = [];
-        $total = 0;
-
-        if ($hits = $service->search($query, $options, $date_range)) {
-            $clicks = $hits['hits']['hits'];
-            $total = $hits['hits']['total'];
-        }
-    }
     
 **Using Facade:**
 

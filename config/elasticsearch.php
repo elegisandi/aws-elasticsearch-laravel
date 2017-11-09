@@ -10,14 +10,16 @@
 */
 
 return [
+    'aws' => env('AWS_ELASTICSEARCH_SERVICE', false),
+    'host' => env('ELASTICSEARCH_ENDPOINT', 'http://localhost') . ':' . env('ELASTICSEARCH_PORT', 9200),
     'mappings' => [],
     'settings' => [
-        'number_of_shards' => env('AWS_ELASTICSEARCH_SHARDS', 5),
-        'number_of_replicas' => env('AWS_ELASTICSEARCH_REPLICAS', 1),
+        'number_of_shards' => env('ELASTICSEARCH_SHARDS', 5),
+        'number_of_replicas' => env('ELASTICSEARCH_REPLICAS', 1),
     ],
     'defaults' => [
-    	'index' => env('AWS_ELASTICSEARCH_INDEX'),
-    	'type' => env('AWS_ELASTICSEARCH_TYPE'),
-    	'aggregation_names' => [],
+        'index' => env('ELASTICSEARCH_DEFAULT_INDEX'),
+        'type' => env('ELASTICSEARCH_DEFAULT_TYPE'),
+        'aggregation_names' => [],
     ],
 ];

@@ -14,11 +14,6 @@ use Illuminate\Support\Collection;
 trait ElasticSearchHelper
 {
     /**
-     * @var string
-     */
-    protected $config = 'elasticsearch';
-
-    /**
      * @param Request $request
      * @param array $defaults
      * @param string $type
@@ -26,7 +21,7 @@ trait ElasticSearchHelper
      */
     private function setSearchParams(Request $request, array $defaults = [], $type)
     {
-        $properties = config($this->config)['mappings'][$type]['properties'];
+        $properties = $this->getMappingProperties($type)->all();
         $fillables = array_keys($properties);
         $query = array_filter($request->only($fillables));
 
@@ -211,7 +206,7 @@ trait ElasticSearchHelper
      */
     protected function defaultAggregationNames()
     {
-        return config($this->config)['defaults']['aggregation_names'];
+        return $this->config['defaults']['aggregation_names'];
     }
 
     /**
@@ -219,7 +214,7 @@ trait ElasticSearchHelper
      */
     protected function defaultIndex()
     {
-        return config($this->config)['defaults']['index'];
+        return $this->config['defaults']['index'];
     }
 
     /**
@@ -227,7 +222,7 @@ trait ElasticSearchHelper
      */
     protected function defaultType()
     {
-        return config($this->config)['defaults']['type'];
+        return $this->config['defaults']['type'];
     }
 
     /**
@@ -325,7 +320,7 @@ trait ElasticSearchHelper
      */
     protected function getMappingProperties($type)
     {
-        return collect(config($this->config)['mappings'][$type]['properties']);
+        return collect($this->config['mappings'][$type]['properties']);
     }
 
     /**
@@ -355,11 +350,11 @@ trait ElasticSearchHelper
                             break;
 
                         case 'settings':
-                            $arg_value = config($this->config)['settings'];
+                            $arg_value = $this->config['settings'];
                             break;
 
                         case 'mappings':
-                            $arg_value = config($this->config)['mappings'];
+                            $arg_value = $this->config['mappings'];
                             break;
 
                         default:

@@ -2,6 +2,7 @@
 
 namespace elegisandi\AWSElasticsearchService;
 
+use Elasticsearch\Client;
 use elegisandi\AWSElasticsearchService\Traits\ElasticSearchHelper;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Collection;
@@ -15,7 +16,7 @@ class ElasticSearch
     use ElasticSearchHelper;
 
     /**
-     * @var \Elasticsearch\Client
+     * @var Client
      */
     protected $client;
 
@@ -218,7 +219,7 @@ class ElasticSearch
     }
 
     /**
-     * @return \Elasticsearch\Client
+     * @return Client
      * @credits https://github.com/aws/aws-sdk-php/issues/848#issuecomment-164592902
      */
     protected function buildClient()
@@ -269,5 +270,13 @@ class ElasticSearch
             ->setHandler($handler)
             ->setHosts([env('AWS_ELASTICSEARCH_SERVICE_ENDPOINT') . ':443'])
             ->build();
+    }
+
+    /**
+     * @param Client $client
+     */
+    public function setClient(Client $client)
+    {
+        $this->client = $client;
     }
 }

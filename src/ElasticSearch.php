@@ -224,6 +224,13 @@ class ElasticSearch
      */
     protected function buildClient()
     {
+        $client_builder = \Elasticsearch\ClientBuilder::create()
+            ->setHosts([env('AWS_ELASTICSEARCH_SERVICE_ENDPOINT') . ':' . env('AWS_ELASTICSEARCH_SERVICE_PORT')]);
+
+        if (env('APP_ENV') == 'local') {
+            return $client_builder->build();
+        }
+
         $psr7Handler = \Aws\default_http_handler();
         $signer = new \Aws\Signature\SignatureV4('es', config('aws.region'));
         $credentialProvider = \Aws\Credentials\CredentialProvider::defaultProvider();
@@ -266,10 +273,7 @@ class ElasticSearch
             ]);
         };
 
-        return \Elasticsearch\ClientBuilder::create()
-            ->setHandler($handler)
-            ->setHosts([env('AWS_ELASTICSEARCH_SERVICE_ENDPOINT') . ':443'])
-            ->build();
+        return $client_builder->setHandler($handler)->build();
     }
 
     /**

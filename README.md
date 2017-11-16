@@ -101,7 +101,7 @@ AWS Elasticsearch Service for Laravel/Lumen
 
     > returns `Array`
 
-* search(array $query = [], array $options, array $range = [], $type, $index)
+* search(array $query = [], array $options = [], array $range = [], $type, $index)
 
     > returns `Array`
 
@@ -145,7 +145,15 @@ AWS Elasticsearch Service for Laravel/Lumen
 
     > returns `Collection`
 
+* indexDocument(array $body, $type = null, $index = null)
+
+    > returns `Array`
+
 * getDocument($id, $type, $index)
+
+    > returns `Array`
+
+* updateDocument(array $fields, $id, $type = null, $index = null)
 
     > returns `Array`
 

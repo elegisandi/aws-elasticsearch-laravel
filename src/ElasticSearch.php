@@ -4,7 +4,6 @@ namespace elegisandi\AWSElasticsearchService;
 
 use Elasticsearch\Client;
 use elegisandi\AWSElasticsearchService\Traits\ElasticSearchHelper;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Collection;
 
 /**
@@ -56,9 +55,9 @@ class ElasticSearch
 
         try {
             $aggregations = $this->client->search($params);
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             if (config('app.debug')) {
-                Log::debug($e);
+                throw $exception;
             }
         }
 
@@ -73,7 +72,7 @@ class ElasticSearch
      * @param string $index
      * @return array
      */
-    private function search(array $query = [], array $options, array $range = [], $type, $index)
+    private function search(array $query = [], array $options = [], array $range = [], $type, $index)
     {
         $params = [
             'index' => $index,
@@ -103,13 +102,26 @@ class ElasticSearch
 
         try {
             $hits = $this->client->search($params);
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             if (config('app.debug')) {
-                Log::debug($e);
+                throw $exception;
             }
         }
 
         return $hits;
+    }
+
+    /**
+     * @param array $body
+     * @param string $type
+     * @param string $index
+     * @return array
+     */
+    private function indexDocument(array $body, $type, $index)
+    {
+        $params = array_filter(compact('index', 'type', 'body'));
+
+        return $this->client->index($params);
     }
 
     /**
@@ -123,6 +135,24 @@ class ElasticSearch
         $params = array_filter(compact('index', 'type', 'id'));
 
         return $this->client->get($params);
+    }
+
+    /**
+     * @param array $fields
+     * @param string $id
+     * @param string $type
+     * @param string $index
+     * @return array
+     */
+    private function updateDocument(array $fields, $id, $type, $index)
+    {
+        $body = [
+            'doc' => $fields
+        ];
+
+        $params = array_filter(compact('index', 'type', 'id', 'body'));
+
+        return $this->client->update($params);
     }
 
     /**

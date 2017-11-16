@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
  * @package elegisandi\AWSElasticsearchService
  *
  * @method static array aggregations(array $aggs, $type = null, $index = null)
- * @method static array search(array $query = [], array $options, array $range = [], $type = null, $index = null)
+ * @method static array search(array $query = [], array $options = [], array $range = [], $type = null, $index = null)
  * @method static array setSearchParams(Request $request, array $defaults = [], $type = null)
  * @method static array getDateRange($range)
  * @method static array setAggregationDailyDateRanges($start, $end)
@@ -22,7 +22,9 @@ use Illuminate\Support\Collection;
  * @method static array setBoolQueryClause(Collection $query, array $properties, $context, $occur, callable $callback = null)
  * @method static array getMappingPropertiesByDataType(Collection $properties, $data_type)
  * @method static Collection getMappingProperties($type = null)
+ * @method static array indexDocument(array $body, $type = null, $index = null)
  * @method static array getDocument($id, $type = null, $index = null)
+ * @method static array updateDocument(array $fields, $id, $type = null, $index = null)
  * @method static array getSettings($index = null)
  * @method static array updateSettings(array $settings, $index = null)
  * @method static array getMappings($index = null, $type = null)

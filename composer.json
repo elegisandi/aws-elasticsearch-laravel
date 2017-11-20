@@ -1,6 +1,8 @@
 {
     "name": "elegisandi/aws-elasticsearch-laravel",
     "description": "AWS Elasticsearch Service for Laravel/Lumen",
+    "keywords": ["elegisandi", "aws", "elasticsearch", "laravel", "aws-elasticsearch-laravel"],
+    "homepage": "https://github.com/elegisandi/aws-elasticsearch-laravel", 
     "type": "library",
     "require": {
         "php": ">=7.0",
@@ -12,13 +14,24 @@
     "authors": [
         {
             "name": "Elegi Sandi",
-            "email": "elegi@crowdmetric.com"
+            "email": "elegi@crowdmetric.com",
+            "role": "Developer"
         }
     ],
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "elegisandi\\AWSElasticsearchService\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "elegisandi\\AWSElasticsearchService\\ElasticSearchServiceProvider"
+            ],
+            "aliases": {
+                "ElasticSearch": "elegisandi\\AWSElasticsearchService\\ElasticSearchFacade"
+            }
         }
     }
 }

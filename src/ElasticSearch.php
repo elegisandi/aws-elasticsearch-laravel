@@ -4,7 +4,6 @@ namespace elegisandi\AWSElasticsearchService;
 
 use Elasticsearch\Client;
 use elegisandi\AWSElasticsearchService\Traits\ElasticSearchHelper;
-use Illuminate\Support\Collection;
 
 /**
  * Class ElasticSearch
@@ -20,12 +19,12 @@ class ElasticSearch
     protected $client;
 
     /**
-     * @var array
+     * @var array|\Illuminate\Config\Repository|mixed
      */
     protected $config = [];
 
     /**
-     * ElasticSearchService constructor.
+     * ElasticSearch constructor.
      */
     public function __construct()
     {
@@ -38,7 +37,8 @@ class ElasticSearch
      * @param array $aggs
      * @param string $type
      * @param string $index
-     * @return array
+     * @return array|null
+     * @throws \Exception
      */
     private function aggregations(array $aggs, $type, $index)
     {
@@ -70,7 +70,8 @@ class ElasticSearch
      * @param array $range
      * @param string $type
      * @param string $index
-     * @return array
+     * @return array|null
+     * @throws \Exception
      */
     private function search(array $query = [], array $options = [], array $range = [], $type, $index)
     {
@@ -99,9 +100,15 @@ class ElasticSearch
         }
 
         $hits = null;
+        $method = 'search';
+
+        if (isset($params['body']['size']) && $params['body']['size'] == 0) {
+            $method = 'count';
+            unset($params['body']['size']);
+        }
 
         try {
-            $hits = $this->client->search($params);
+            $hits = $this->client->$method($params);
         } catch (\Exception $exception) {
             if (config('app.debug')) {
                 throw $exception;
@@ -109,6 +116,19 @@ class ElasticSearch
         }
 
         return $hits;
+    }
+
+    /**
+     * @param array $query
+     * @param array $range
+     * @param string $type
+     * @param string $index
+     * @return array|null
+     * @throws \Exception
+     */
+    private function count(array $query = [], array $range = [], $type, $index)
+    {
+        return $this->search($query, ['size' => 0], $range, $type, $index);
     }
 
     /**

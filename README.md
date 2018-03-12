@@ -105,6 +105,10 @@ AWS Elasticsearch Service for Laravel/Lumen
 
     > returns `Array`
 
+* count(array $query = [], array $range = [], $type, $index)
+
+    > returns `Array`
+
 * setSearchParams(Request $request, array $defaults = [], $type)
 
     > returns `Array`

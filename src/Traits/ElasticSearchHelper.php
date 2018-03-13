@@ -179,9 +179,10 @@ trait ElasticSearchHelper
     /**
      * @param string $start
      * @param string $end
+     * @param string $format
      * @return array
      */
-    protected function setAggregationDailyDateRanges($start, $end)
+    protected function setAggregationDailyDateRanges($start, $end, $format = 'M d, Y')
     {
         $date_ranges = [];
 
@@ -191,8 +192,8 @@ trait ElasticSearchHelper
 
             while ($from <= $to) {
                 $date_ranges[] = [
-                    'from' => Carbon::createFromTimestamp($from)->format('M d, Y'),
-                    'to' => Carbon::createFromTimestamp($from += 24 * 60 * 60)->format('M d, Y')
+                    'from' => Carbon::createFromTimestamp($from)->format($format),
+                    'to' => Carbon::createFromTimestamp($from += 24 * 60 * 60)->format($format)
                 ];
             }
         } catch (Exception $e) {
@@ -326,6 +327,8 @@ trait ElasticSearchHelper
     /**
      * @param string $method
      * @param array|null $args
+     * @return mixed
+     * @throws \ReflectionException
      */
     public function __call($method, $args)
     {

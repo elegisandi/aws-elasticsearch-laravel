@@ -97,15 +97,25 @@ AWS Elasticsearch Service for Laravel/Lumen
 
 ## Available Methods
 
-* aggregations(array $aggs, $type, $index)
+* ##### aggregations(array $aggs, $type, $index)
+
+    > **$aggs** : must follow the structure specified in [elasticsearch docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html).
 
     > returns `Array`
 
-* search(array $query = [], array $options = [], array $range = [], $type, $index)
+* ##### search(array $query = [], array $options = [], array $range = [], $type, $index)
+
+    > **$query** : an array of key-value pair of any available properties
+
+    > **$options** : an array of key-value pair of these params: _(from, size, sort)_
+
+    > **$range** : an array representation of [range query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html).
 
     > returns `Array`
 
 * count(array $query = [], array $range = [], $type, $index)
+
+    > a _(syntactic sugar)_ method of search with zero hits result
 
     > returns `Array`
 
@@ -186,6 +196,17 @@ AWS Elasticsearch Service for Laravel/Lumen
 * deleteIndex($index)
 
     > returns `Array`
+
+## Limitations
+
+- Supported data types in **search** method are:
+
+    - keyword
+    - text
+    - array
+    - integer
+    - boolean
+    - ip
 
 ## Contributing
 

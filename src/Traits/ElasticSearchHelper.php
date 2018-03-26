@@ -289,10 +289,15 @@ trait ElasticSearchHelper
         $query->only($properties)->each(function ($value, $key) use ($context, $occur, $callback, &$data) {
             $belongs = $occur;
 
-            // all values that starts with exclamation mark (!) is treated as not equal
-            if ($value[0] == '!') {
+            // all string values that starts with exclamation mark (!) is treated as not equal
+            if (is_string($value) && $value[0] == '!') {
                 $belongs = 'must_not';
+
                 $value = ltrim($value, '!');
+            }
+
+            if (is_array($value) && $context == 'term') {
+                $context = 'terms';
             }
 
             $data[$belongs][] = [$context => [$key => is_callable($callback) ? $callback($value) : $value]];

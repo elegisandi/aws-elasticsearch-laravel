@@ -228,43 +228,43 @@ trait ElasticSearchHelper
 
     /**
      * @param Collection $query
+     * @param array $bool_clauses
      * @param string $type
      * @return array
      */
-    protected function setSearchQueryFilters(Collection $query, $type)
+    protected function setSearchQueryFilters(Collection $query, array $bool_clauses = [], $type)
     {
         $filters = [];
 
-        if ($query->isEmpty()) {
-            return $filters;
+        if ($query->isNotEmpty()) {
+
+            // get properties
+            $properties = $this->getMappingProperties($type);
+
+            // get text type properties
+            $text_type_props = $this->getMappingPropertiesByDataType($properties, 'text');
+
+            // get keyword type properties
+            // included types: keyword, ip, integer, array
+            $keyword_type_props = $this->getMappingPropertiesByDataType($properties, ['keyword', 'ip', 'integer', 'array']);
+
+            // get boolean type properties
+            $bool_type_props = $this->getMappingPropertiesByDataType($properties, 'boolean');
+
+            // prepare keyword data type filter
+            $bool_clauses[] = $this->setBoolQueryClause($query, $keyword_type_props, 'term', 'filter');
+
+            // prepare text data type matching
+            $bool_clauses[] = $this->setBoolQueryClause($query, $text_type_props, 'match', 'must');
+
+            // prepare boolean data type filter
+            $bool_clauses[] = $this->setBoolQueryClause($query, $bool_type_props, 'term', 'filter', function ($value) {
+                return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+            });
         }
 
-        // get properties
-        $properties = $this->getMappingProperties($type);
-
-        // get text type properties
-        $text_type_props = $this->getMappingPropertiesByDataType($properties, 'text');
-
-        // get keyword type properties
-        // included types: keyword, ip, integer, array
-        $keyword_type_props = $this->getMappingPropertiesByDataType($properties, ['keyword', 'ip', 'integer', 'array']);
-
-        // get boolean type properties
-        $bool_type_props = $this->getMappingPropertiesByDataType($properties, 'boolean');
-
-        // prepare keyword data type filter
-        $term_filter = $this->setBoolQueryClause($query, $keyword_type_props, 'term', 'filter');
-
-        // prepare text data type matching
-        $full_text_match = $this->setBoolQueryClause($query, $text_type_props, 'match', 'must');
-
-        // prepare boolean data type filter
-        $bool_filter = $this->setBoolQueryClause($query, $bool_type_props, 'term', 'filter', function ($value) {
-            return filter_var($value, FILTER_VALIDATE_BOOLEAN);
-        });
-
-        foreach (compact('term_filter', 'full_text_match', 'bool_filter') as $filter) {
-            foreach ($filter as $occur => $context) {
+        foreach ($bool_clauses as $clause) {
+            foreach ($clause as $occur => $context) {
                 foreach ($context as $field) {
                     $filters[$occur][] = $field;
                 }

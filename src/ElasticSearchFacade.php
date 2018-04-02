@@ -10,7 +10,7 @@ use Illuminate\Support\Collection;
  * Class ElasticSearchFacade
  * @package elegisandi\AWSElasticsearchService
  *
- * @method static array aggregations(array $aggs, $type = null, $index = null)
+ * @method static array aggregations(array $aggs, array $query = [], $type = null, $index = null)
  * @method static array search(array $query = [], array $options = [], array $range = [], $type = null, $index = null)
  * @method static array count(array $query = [], array $range = [], $type = null, $index = null)
  * @method static array setSearchParams(Request $request, array $defaults = [], $type = null)
@@ -19,7 +19,7 @@ use Illuminate\Support\Collection;
  * @method static array defaultAggregationNames
  * @method static string defaultIndex
  * @method static string defaultType
- * @method static array setSearchQueryFilters(Collection $query, $type = null)
+ * @method static array setSearchQueryFilters(Collection $query, array $bool_clauses = [], $type = null)
  * @method static array setBoolQueryClause(Collection $query, array $properties, $context, $occur, callable $callback = null)
  * @method static array getMappingPropertiesByDataType(Collection $properties, $data_type)
  * @method static Collection getMappingProperties($type = null)

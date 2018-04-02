@@ -35,12 +35,13 @@ class ElasticSearch
 
     /**
      * @param array $aggs
+     * @param array $query
      * @param string $type
      * @param string $index
      * @return array|null
      * @throws \Exception
      */
-    private function aggregations(array $aggs, $type, $index)
+    private function aggregations(array $aggs, array $query = [], $type, $index)
     {
         $params = [
             'index' => $index,
@@ -50,6 +51,16 @@ class ElasticSearch
                 'aggs' => $aggs
             ],
         ];
+
+        // create query filters
+        $filters = $this->setSearchQueryFilters(collect($query), [], $type);
+
+        // set bool query if filters not empty
+        if (!empty($filters)) {
+            $params['body']['query'] = [
+                'bool' => $filters
+            ];
+        }
 
         $aggregations = null;
 
@@ -81,11 +92,8 @@ class ElasticSearch
             'body' => $options,
         ];
 
-        // convert query to collection for easier manipulation
-        $query = collect($query);
-
         // create query filters
-        $filters = $this->setSearchQueryFilters($query, $type);
+        $filters = $this->setSearchQueryFilters(collect($query), [], $type);
 
         // set date range if not empty
         if (!empty($range)) {

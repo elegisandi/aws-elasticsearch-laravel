@@ -97,11 +97,13 @@ AWS Elasticsearch Service for Laravel/Lumen
 
 ## Available Methods
 
-* ##### aggregations(array $aggs, array $query = [], $type, $index)
+* ##### aggregations(array $aggs, array $query = [], array $options = [], $type, $index)
 
     > **$aggs** : must follow the structure specified in [elasticsearch docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html).
 
     > **$query** : see `search` method `$query` argument
+
+    > **$options** : see `search` method `$options` argument
 
     > returns `Array`
 

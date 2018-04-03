@@ -36,20 +36,21 @@ class ElasticSearch
     /**
      * @param array $aggs
      * @param array $query
+     * @param array $options
      * @param string $type
      * @param string $index
      * @return array|null
      * @throws \Exception
      */
-    private function aggregations(array $aggs, array $query = [], $type, $index)
+    private function aggregations(array $aggs, array $query = [], array $options = [], $type, $index)
     {
         $params = [
             'index' => $index,
             'type' => $type,
-            'body' => [
+            'body' => array_merge([
                 'size' => 0,
                 'aggs' => $aggs
-            ],
+            ], $options),
         ];
 
         // create query filters
@@ -58,7 +59,7 @@ class ElasticSearch
         // set bool query if filters not empty
         if (!empty($filters)) {
             $params['body']['query'] = [
-                'bool' => $filters
+                'bool' => array_merge_recursive($params['body']['query']['bool'] ?? [], $filters)
             ];
         }
 
@@ -77,7 +78,7 @@ class ElasticSearch
 
     /**
      * @param array $query
-     * @param array $options [sort, size, from]
+     * @param array $options [sort, size, from, query]
      * @param array $range
      * @param string $type
      * @param string $index
@@ -103,7 +104,7 @@ class ElasticSearch
         // set bool query if filters not empty
         if (!empty($filters)) {
             $params['body']['query'] = [
-                'bool' => $filters
+                'bool' => array_merge_recursive($params['body']['query']['bool'] ?? [], $filters)
             ];
         }
 

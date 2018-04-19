@@ -177,25 +177,54 @@ trait ElasticSearchHelper
     }
 
     /**
-     * @param string $start
-     * @param string $end
-     * @param string $format
+     * @param string|Carbon $start
+     * @param string|Carbon $end
+     * @param string|null $format
      * @return array
      */
-    protected function setAggregationDailyDateRanges($start, $end, $format = 'M d, Y')
+    protected function setAggregationDailyDateRanges($start, $end, $format = null)
     {
         $date_ranges = [];
 
         try {
-            $from = Carbon::parse($start)->startOfDay()->timestamp;
-            $to = Carbon::parse($end)->endOfDay()->timestamp;
-
-            while ($from <= $to) {
-                $date_ranges[] = [
-                    'from' => Carbon::createFromTimestamp($from)->format($format),
-                    'to' => Carbon::createFromTimestamp($from += 24 * 60 * 60)->format($format)
-                ];
+            if (!$start instanceof Carbon) {
+                $start = Carbon::parse($start);
             }
+
+            if (!$end instanceof Carbon) {
+                $end = Carbon::parse($end);
+            }
+
+            // make sure to reset the dates time
+            $start->startOfDay();
+            $end->startOfDay();
+
+            // count number of days
+            $num_of_days = $start->diffInDays($end);
+
+            // set date format if any,
+            // else set unix timestamp
+            $format_date = function ($date) use ($format) {
+                return $format ? $date->format($format) : $date->timestamp;
+            };
+
+            // add date range (from, to)
+            $add_date_range = function ($date) use ($format_date) {
+                return [
+                    'from' => $format_date($date->startOfDay()),
+                    'to' => $format_date($date->endOfDay())
+                ];
+            };
+
+            // set start date as first range
+            $date_ranges[] = $add_date_range($start);
+
+            for ($day = 1; $day < $num_of_days; $day++) {
+                $date_ranges[] = $add_date_range($start->copy()->addDays($day));
+            }
+
+            // set end date as last range
+            $date_ranges[] = $add_date_range($end);
         } catch (Exception $e) {
         }
 

@@ -5,6 +5,7 @@ namespace elegisandi\AWSElasticsearchService\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Application as LaravelApplication;
 use Laravel\Lumen\Application as LumenApplication;
+use Exception;
 
 /**
  * Class CreateIndex
@@ -24,7 +25,7 @@ class CreateIndex extends Command
      *
      * @var string
      */
-    protected $description = 'Create new elasticsearch index.';
+    protected $description = 'Create new or reset elasticsearch index.';
 
     /**
      * Execute the console command.
@@ -34,17 +35,37 @@ class CreateIndex extends Command
     public function handle()
     {
         if ($this->laravel instanceof LaravelApplication) {
-            if ($this->option('reset')) {
-                \elegisandi\AWSElasticsearchService\ElasticSearchFacade::deleteIndex();
-            }
+            try {
+                $action = 'created';
 
-            \elegisandi\AWSElasticsearchService\ElasticSearchFacade::createIndex();
+                if ($reset = $this->option('reset')) {
+                    \elegisandi\AWSElasticsearchService\ElasticSearchFacade::deleteIndex();
+
+                    $action = 'reset';
+                }
+
+                \elegisandi\AWSElasticsearchService\ElasticSearchFacade::createIndex();
+
+                $this->info('Elasticsearch index has been successfully ' . $action . '.');
+            } catch (Exception $e) {
+                $this->error($e->getMessage());
+            }
         } elseif ($this->laravel instanceof LumenApplication) {
-            if ($this->option('reset')) {
-                app('elasticsearch')->deleteIndex();
-            }
+            try {
+                $action = 'created';
 
-            app('elasticsearch')->createIndex();
+                if ($this->option('reset')) {
+                    app('elasticsearch')->deleteIndex();
+
+                    $action = 'reset';
+                }
+
+                app('elasticsearch')->createIndex();
+
+                $this->info('Elasticsearch index has been successfully ' . $action . '.');
+            } catch (Exception $e) {
+                $this->error($e->getMessage());
+            }
         }
     }
 }

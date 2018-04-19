@@ -15,7 +15,7 @@ use Illuminate\Support\Collection;
  * @method static array count(array $query = [], array $range = [], $type = null, $index = null)
  * @method static array setSearchParams(Request $request, array $defaults = [], $type = null)
  * @method static array getDateRange($range)
- * @method static array setAggregationDailyDateRanges($start, $end)
+ * @method static array setAggregationDailyDateRanges($start, $end, $format = null)
  * @method static array defaultAggregationNames
  * @method static string defaultIndex
  * @method static string defaultType

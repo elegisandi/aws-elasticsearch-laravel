@@ -132,51 +132,57 @@ trait ElasticSearchHelper
 
     /**
      * @param string $range
+     * @param string|null $format
      * @return array
      */
-    protected function getDateRange($range)
+    protected function getDateRange($range, $format = null)
     {
         switch ($range) {
             case 'today':
-                $start = Carbon::now()->startOfDay()->toDateString();
-                $end = Carbon::now()->endOfDay()->toDateString();
+                $start = Carbon::now()->startOfDay();
+                $end = Carbon::now()->endOfDay();
                 break;
 
             case 'yesterday':
-                $start = Carbon::yesterday()->startOfDay()->toDateString();
-                $end = Carbon::yesterday()->endOfDay()->toDateString();
+                $start = Carbon::yesterday()->startOfDay();
+                $end = Carbon::yesterday()->endOfDay();
                 break;
 
             case 'this-month':
-                $start = Carbon::now()->startOfMonth()->startOfDay()->toDateString();
-                $end = Carbon::now()->endOfDay()->toDateString();
+                $start = Carbon::now()->startOfMonth()->startOfDay();
+                $end = Carbon::now()->endOfDay();
                 break;
 
             case 'last-month':
-                $start = Carbon::now()->subMonth()->startOfMonth()->startOfDay()->toDateString();
-                $end = Carbon::now()->subMonth()->endOfMonth()->endOfDay()->toDateString();
+                $start = Carbon::now()->subMonth()->startOfMonth()->startOfDay();
+                $end = Carbon::now()->subMonth()->endOfMonth()->endOfDay();
                 break;
 
             case 'last-2-months':
-                $start = Carbon::now()->subMonths(2)->startOfMonth()->startOfDay()->toDateString();
-                $end = Carbon::now()->subMonth()->endOfMonth()->endOfDay()->toDateString();
+                $start = Carbon::now()->subMonths(2)->startOfMonth()->startOfDay();
+                $end = Carbon::now()->subMonth()->endOfMonth()->endOfDay();
                 break;
 
             case 'last-3-months':
-                $start = Carbon::now()->subMonths(3)->startOfMonth()->startOfDay()->toDateString();
-                $end = Carbon::now()->subMonth()->endOfMonth()->endOfDay()->toDateString();
+                $start = Carbon::now()->subMonths(3)->startOfMonth()->startOfDay();
+                $end = Carbon::now()->subMonth()->endOfMonth()->endOfDay();
                 break;
 
             default: // last-7-days
-                $start = Carbon::now()->subWeek()->startOfDay()->toDateString();
-                $end = Carbon::yesterday()->endOfDay()->toDateString();
+                $start = Carbon::now()->subWeek()->startOfDay();
+                $end = Carbon::yesterday()->endOfDay();
                 break;
+        }
+
+        if ($format) {
+            $start = $start->format($format);
+            $end = $end->format($format);
         }
 
         return compact('start', 'end');
     }
 
-    /**
+    /**$format
      * @param string|Carbon $start
      * @param string|Carbon $end
      * @param string|null $format
@@ -202,10 +208,9 @@ trait ElasticSearchHelper
             // count number of days
             $num_of_days = $start->diffInDays($end);
 
-            // set date format if any,
-            // else set unix timestamp
+            // set date format if any
             $format_date = function ($date) use ($format) {
-                return $format ? $date->format($format) : $date->timestamp;
+                return $format ? $date->format($format) : $date;
             };
 
             // add date range (from, to)

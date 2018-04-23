@@ -127,13 +127,15 @@ AWS Elasticsearch Service for Laravel/Lumen
 
     > returns `Array`
 
-* getDateRange($range)
+* getDateRange($range, $format = null)
+
+    > **$format** must be a valid date format, default is `null` which will return a DateTime instance
 
     > returns `Array`
     
 * setAggregationDailyDateRanges($start, $end, $format = null)
 
-    > **$format** must be a valid date format, default is `null` which will return unix timestamp value
+    > **$format** must be a valid date format, default is `null` which will return a DateTime instance
 
     > returns `Array`
 

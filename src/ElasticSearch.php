@@ -185,6 +185,19 @@ class ElasticSearch
     }
 
     /**
+     * @param string $id
+     * @param string $type
+     * @param string $index
+     * @return array
+     */
+    private function deleteDocument($id, $type, $index)
+    {
+        $params = array_filter(compact('index', 'type', 'id'));
+
+        return $this->client->delete($params);
+    }
+
+    /**
      * @param string|array $index
      * @return array
      */

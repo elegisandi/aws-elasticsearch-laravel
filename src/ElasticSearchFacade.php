@@ -26,6 +26,7 @@ use Illuminate\Support\Collection;
  * @method static array indexDocument(array $body, $type = null, $index = null)
  * @method static array getDocument($id, $type = null, $index = null)
  * @method static array updateDocument(array $fields, $id, $type = null, $index = null)
+ * @method static array deleteDocument($id, $type, $index)
  * @method static array getSettings($index = null)
  * @method static array updateSettings(array $settings, $index = null)
  * @method static array getMappings($index = null, $type = null)

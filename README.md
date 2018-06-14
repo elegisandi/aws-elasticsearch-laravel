@@ -179,6 +179,10 @@ AWS Elasticsearch Service for Laravel/Lumen
 
     > returns `Array`
 
+* deleteDocument($id, $type = null, $index = null)
+
+    > returns `Array`
+
 * getSettings($index = null)
 
     > returns `Array`

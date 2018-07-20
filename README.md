@@ -209,6 +209,8 @@ AWS Elasticsearch Service for Laravel/Lumen
 
     > returns `Array`
 
+### NOTE: All methods of the elasticsearch client are now supported.
+
 ## Limitations
 
 - Supported data types in **search** method are:

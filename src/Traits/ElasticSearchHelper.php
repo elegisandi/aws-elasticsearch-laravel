@@ -411,6 +411,11 @@ trait ElasticSearchHelper
             }
 
             return call_user_func_array([$this, $method], $args);
+
+        } elseif (method_exists($this->client, $method)) {
+
+            return call_user_func_array([$this->client, $method], $args);
+
         }
     }
 }

@@ -1,14 +1,14 @@
 <?php
 
-namespace elegisandi\AWSElasticsearchService;
+namespace elegisandi\AWSElasticsearchService\Facades;
 
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 /**
- * Class ElasticSearchFacade
- * @package elegisandi\AWSElasticsearchService
+ * Class ElasticSearch
+ * @package elegisandi\AWSElasticsearchService\Facades
  *
  * @method static array aggregations(array $aggs, array $query = [], array $options = [], $type = null, $index = null)
  * @method static array search(array $query = [], array $options = [], array $range = [], $type = null, $index = null)
@@ -35,7 +35,7 @@ use Illuminate\Support\Collection;
  * @method static bool getIndex($index = null)
  * @method static array deleteIndex($index = null)
  */
-class ElasticSearchFacade extends Facade
+class ElasticSearch extends Facade
 {
     /**
      * Get the registered name of the component.

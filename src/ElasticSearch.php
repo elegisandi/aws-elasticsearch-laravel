@@ -309,7 +309,7 @@ class ElasticSearch
 
         if ($this->config['aws']) {
             $psr7Handler = \Aws\default_http_handler();
-            $signer = new \Aws\Signature\SignatureV4('es', config('aws.region'));
+            $signer = new \Aws\Signature\SignatureV4('es', config('aws.region', env('AWS_REGION')));
             $credentialProvider = \Aws\Credentials\CredentialProvider::defaultProvider();
 
             $handler = function (array $request) use ($psr7Handler, $signer, $credentialProvider) {

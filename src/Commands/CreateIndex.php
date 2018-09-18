@@ -39,12 +39,12 @@ class CreateIndex extends Command
                 $action = 'created';
 
                 if ($reset = $this->option('reset')) {
-                    \elegisandi\AWSElasticsearchService\ElasticSearchFacade::deleteIndex();
+                    \elegisandi\AWSElasticsearchService\Facades\ElasticSearch::deleteIndex();
 
                     $action = 'reset';
                 }
 
-                \elegisandi\AWSElasticsearchService\ElasticSearchFacade::createIndex();
+                \elegisandi\AWSElasticsearchService\Facades\ElasticSearch::createIndex();
 
                 $this->info('Elasticsearch index has been successfully ' . $action . '.');
             } catch (Exception $e) {

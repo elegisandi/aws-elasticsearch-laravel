@@ -20,6 +20,7 @@ return [
     'defaults' => [
         'index' => env('ELASTICSEARCH_DEFAULT_INDEX'),
         'type' => env('ELASTICSEARCH_DEFAULT_TYPE'),
+        'time_filter_field' => env('ELASTICSEARCH_DEFAULT_TIME_FILTER_FIELD'),
         'aggregation_names' => [],
     ],
 ];

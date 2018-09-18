@@ -15,7 +15,7 @@ AWS Elasticsearch Service for Laravel/Lumen
 
 - Add facade to your `config/app.php` aliases
 
-      'ElasticSearch' => elegisandi\AWSElasticsearchService\ElasticSearchFacade::class
+      'ElasticSearch' => elegisandi\AWSElasticsearchService\Facades\ElasticSearch::class
       
 - Set AWS credentials and Elasticsearch config in your `.env` file
 
@@ -29,6 +29,7 @@ AWS Elasticsearch Service for Laravel/Lumen
         ELASTICSEARCH_REPLICAS
         ELASTICSEARCH_DEFAULT_INDEX
         ELASTICSEARCH_DEFAULT_TYPE
+        ELASTICSEARCH_DEFAULT_TIME_FILTER_FIELD
 
     When you are already using aws elasticsearch service, set
 
@@ -97,115 +98,134 @@ AWS Elasticsearch Service for Laravel/Lumen
 
 ## Available Methods
 
-* ##### aggregations(array $aggs, array $query = [], array $options = [], $type, $index)
+* ##### aggregations(`array $aggs`, `array $query = []`, `array $options = []`, `$type`, `$index`)
 
     > **$aggs** : must follow the structure specified in [elasticsearch docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html).
 
-    > **$query** : see `search` method `$query` argument
+    > **$query** : see **`search`** method **`$query`** argument
 
-    > **$options** : see `search` method `$options` argument
+    > **$options** : see **`search`** method **`$options`** argument
 
     > returns `Array`
 
-* ##### search(array $query = [], array $options = [], array $range = [], $type, $index)
+* ##### search(`array $query = []`, `array $options = []`, `array $range = []`, `$type`, `$index`)
 
     > **$query** : an array of key-value pair of any available properties
 
-    > **$options** : an array of key-value pair of these params: _(from, size, sort)_
+    > **$options** : an array of key-value pair of the ff: `from`, `size`, `sort`
 
     > **$range** : an array representation of [range query](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html).
 
     > returns `Array`
 
-* count(array $query = [], array $range = [], $type, $index)
+* ##### count(`array $query = []`, `array $range = []`, `$type`, `$index`)
 
     > a _(syntactic sugar)_ method of search with zero hits result
 
     > returns `Array`
 
-* setSearchParams(Request $request, array $defaults = [], $type)
+* ##### setSearchParams(`Request $request`, `array $defaults = []`, `$type`)
+
+    > an optional and conventional approach of setting search params via query string
+
+    > **$request** : an instance of `\Illuminate\Http\Request`, query variables in used:
+
+    - `range`, see [getDateRange](https://github.com/elegisandi/aws-elasticsearch-laravel#getDateRange-range-format-null) method
+    - `start`, a valid date string
+    - `end`, a valid date string
+    - `sort`, a mapping property
+    - `order`, value is either `desc` or `asc`
+    - `size`, total results to return _(max of 10000)_
+
+    > **$defaults** : an array of key-value pair of the ff: `sort, order, size`
 
     > returns `Array`
 
-* getDateRange($range, $format = null)
+* ##### getDateRange(`$range`, `$format = null`)
+
+    > **$range** : predefined date range values: `today, yesterday, last-7-days, this-month, last-month, last-2-months, last-3-months`
 
     > **$format** must be a valid date format, default is `null` which will return a DateTime instance
 
     > returns `Array`
     
-* setAggregationDailyDateRanges($start, $end, $format = null)
+* ##### setAggregationDailyDateRanges(`$start`, `$end`, `$format = null`)
 
     > **$format** must be a valid date format, default is `null` which will return a DateTime instance
 
     > returns `Array`
 
-* defaultAggregationNames
+* ##### defaultAggregationNames
 
     > returns `Array`
 
-* defaultIndex
+* ##### defaultIndex
 
     > returns `String`
 
-* defaultType
+* ##### defaultType
+
+    > returns `String`
+    
+* ##### defaultTimeFilterField
 
     > returns `String`
 
-* setSearchQueryFilters(Collection $query, array $bool_clauses = [], $type = null)
+* ##### setSearchQueryFilters(`Collection $query`, `array $bool_clauses = []`, `$type = null`)
 
     > returns `Array`
 
-* setBoolQueryClause(Collection $query, array $properties, $context, $occur, callable $callback = null)
+* ##### setBoolQueryClause(`Collection $query`, `array $properties`, `$context`, `$occur`, `callable $callback = null`)
 
     > returns `Array`
 
-* getMappingPropertiesByDataType(Collection $properties, $data_type)
+* ##### getMappingPropertiesByDataType(`Collection $properties`, `$data_type`)
 
     > returns `Array`
 
-* getMappingProperties($type = null)
+* ##### getMappingProperties(`$type = null`)
 
     > returns `Collection`
 
-* indexDocument(array $body, $type = null, $index = null)
+* ##### indexDocument(`array $body`, `$type = null`, `$index = null`)
 
     > returns `Array`
 
-* getDocument($id, $type, $index)
+* ##### getDocument(`$id`, `$type`, `$index`)
 
     > returns `Array`
 
-* updateDocument(array $fields, $id, $type = null, $index = null)
+* ##### updateDocument(`array $fields`, `$id`, `$type = null`, `$index = null`)
 
     > returns `Array`
 
-* deleteDocument($id, $type = null, $index = null)
+* ##### deleteDocument(`$id`, `$type = null`, `$index = null`)
 
     > returns `Array`
 
-* getSettings($index = null)
+* ##### getSettings(`$index = null`)
 
     > returns `Array`
 
-* updateSettings(array $settings, $index)
+* ##### updateSettings(`array $settings`, `$index`)
 
     > returns `Array`
 
-* getMappings($index, $type)
+* ##### getMappings(`$index, $type`)
 
     > returns `Array`
 
-* updateMappings(array $properties, $type, $index)
+* ##### updateMappings(`array $properties`, `$type`, `$index`)
 
     > returns `Array`
 
-* createIndex(array $mappings, array $settings, $index)
+* ##### createIndex(`array $mappings`, `array $settings`, `$index`)
 
-* getIndex($index = null)
+* ##### getIndex($index = null)
 
     > returns `Boolean`
 
-* deleteIndex($index)
+* ##### deleteIndex(`$index`)
 
     > returns `Array`
 

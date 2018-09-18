@@ -40,9 +40,12 @@ trait ElasticSearchHelper
             extract($this->getDateRange($range));
         }
 
+        // get default time filter field
+        $time_filter_field = $this->defaultTimeFilterField();
+
         // set default values
         $defaults = array_merge([
-            'sort' => 'timestamp',
+            'sort' => $time_filter_field,
             'order' => 'desc',
             'size' => 30
         ], $defaults);
@@ -55,7 +58,7 @@ trait ElasticSearchHelper
         // parse and set start date if valid
         if (!empty($start)) {
             try {
-                $date_range['timestamp']['gte'] = Carbon::parse($start)->startOfDay()->toDateTimeString();
+                $date_range[$time_filter_field]['gte'] = Carbon::parse($start)->startOfDay()->toDateTimeString();
             } catch (Exception $e) {
                 $invalid_start = true;
                 $start = Carbon::now()->subWeek()->toDateString();
@@ -65,17 +68,17 @@ trait ElasticSearchHelper
         // parse and set end date if valid
         if (!empty($end)) {
             try {
-                $date_range['timestamp']['lte'] = Carbon::parse($end)->endOfDay()->toDateTimeString();
+                $date_range[$time_filter_field]['lte'] = Carbon::parse($end)->endOfDay()->toDateTimeString();
             } catch (Exception $e) {
                 $invalid_end = true;
                 $end = Carbon::yesterday()->toDateString();
             }
         }
 
-        // set timestamp format and timezone if any
-        if (!empty($date_range['timestamp'])) {
-            $date_range['timestamp']['format'] = 'yyyy-MM-dd HH:mm:ss';
-            $date_range['timestamp']['time_zone'] = config('app.timezone');
+        // set time filter field format and timezone if any
+        if (!empty($date_range[$time_filter_field])) {
+            $date_range[$time_filter_field]['format'] = 'yyyy-MM-dd HH:mm:ss';
+            $date_range[$time_filter_field]['time_zone'] = config('app.timezone');
         }
 
         // validate sort
@@ -261,6 +264,14 @@ trait ElasticSearchHelper
     }
 
     /**
+     * @return string
+     */
+    protected function defaultTimeFilterField()
+    {
+        return $this->config['defaults']['time_filter_field'];
+    }
+
+    /**
      * @param Collection $query
      * @param array $bool_clauses
      * @param string $type
@@ -270,7 +281,7 @@ trait ElasticSearchHelper
     {
         $filters = [];
 
-        if ($query->isNotEmpty()) {
+        if (!$query->isEmpty()) {
 
             // get properties
             $properties = $this->getMappingProperties($type);

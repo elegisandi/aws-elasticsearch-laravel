@@ -95,6 +95,11 @@ AWS Elasticsearch Service for Laravel/Lumen
 
     `php artisan elasticsearch:create-index --reset`
 
+* Update Index Mapping _(updates the default index mapping)_
+
+    `php artisan elasticsearch:update-index-mapping`
+
+    > Only supports new properties updates.
 
 ## Available Methods
 

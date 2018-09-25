@@ -30,6 +30,7 @@ class ElasticSearchServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 \elegisandi\AWSElasticsearchService\Commands\CreateIndex::class,
+                \elegisandi\AWSElasticsearchService\Commands\UpdateIndexMapping::class,
             ]);
         }
 

@@ -230,7 +230,7 @@ class ElasticSearch
      * @param string $type
      * @return array
      */
-    private function getMappings($index, $type)
+    private function getMapping($index, $type)
     {
         $params = array_filter(compact('index', 'type'));
 
@@ -243,7 +243,7 @@ class ElasticSearch
      * @param string $index
      * @return array
      */
-    private function updateMappings(array $properties, $type, $index)
+    private function updateMapping(array $properties, $type, $index)
     {
         // Set the index and type
         $params = [

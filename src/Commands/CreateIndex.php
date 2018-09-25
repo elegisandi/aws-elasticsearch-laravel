@@ -5,6 +5,7 @@ namespace elegisandi\AWSElasticsearchService\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Application as LaravelApplication;
 use Laravel\Lumen\Application as LumenApplication;
+use elegisandi\AWSElasticsearchService\Facades\ElasticSearch;
 use Exception;
 
 /**
@@ -35,37 +36,29 @@ class CreateIndex extends Command
     public function handle()
     {
         if ($this->laravel instanceof LaravelApplication) {
-            try {
-                $action = 'created';
-
-                if ($reset = $this->option('reset')) {
-                    \elegisandi\AWSElasticsearchService\Facades\ElasticSearch::deleteIndex();
-
-                    $action = 'reset';
-                }
-
-                \elegisandi\AWSElasticsearchService\Facades\ElasticSearch::createIndex();
-
-                $this->info('Elasticsearch index has been successfully ' . $action . '.');
-            } catch (Exception $e) {
-                $this->error($e->getMessage());
-            }
+            $class = ElasticSearch::class;
         } elseif ($this->laravel instanceof LumenApplication) {
-            try {
-                $action = 'created';
+            $class = app('elasticsearch');
+        }
 
-                if ($this->option('reset')) {
-                    app('elasticsearch')->deleteIndex();
+        if (empty($class)) {
+            $this->error('Application not supported.');
+        }
 
-                    $action = 'reset';
-                }
+        try {
+            $action = 'created';
 
-                app('elasticsearch')->createIndex();
+            if ($this->option('reset')) {
+                call_user_func([$class, 'deleteIndex']);
 
-                $this->info('Elasticsearch index has been successfully ' . $action . '.');
-            } catch (Exception $e) {
-                $this->error($e->getMessage());
+                $action = 'reset';
             }
+            
+            call_user_func([$class, 'createIndex']);
+
+            $this->info('Elasticsearch index has been successfully ' . $action . '.');
+        } catch (Exception $e) {
+            $this->error($e->getMessage());
         }
     }
 }

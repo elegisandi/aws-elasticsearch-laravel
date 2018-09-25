@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
  *
  * @method static array aggregations(array $aggs, array $query = [], array $options = [], $type = null, $index = null)
  * @method static array search(array $query = [], array $options = [], array $range = [], $type = null, $index = null)
- * @method static array count(array $query = [], array $range = [], $type = null, $index = null)
+ * @method static int count(array $query = [], array $range = [], $type = null, $index = null)
  * @method static array setSearchParams(Request $request, array $defaults = [], $type = null)
  * @method static array getDateRange($range, $format = null)
  * @method static array setAggregationDailyDateRanges($start, $end, $format = null)

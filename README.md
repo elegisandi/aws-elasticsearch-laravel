@@ -122,7 +122,7 @@ AWS Elasticsearch Service for Laravel/Lumen
 
     > a _(syntactic sugar)_ method of search with zero hits result
 
-    > returns `Array`
+    > returns `Int`
 
 * ##### setSearchParams(`Request $request`, `array $defaults = []`, `$type`)
 

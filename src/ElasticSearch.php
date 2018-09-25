@@ -132,12 +132,14 @@ class ElasticSearch
      * @param array $range
      * @param string $type
      * @param string $index
-     * @return array|null
+     * @return int
      * @throws \Exception
      */
     private function count(array $query = [], array $range = [], $type, $index)
     {
-        return $this->search($query, ['size' => 0], $range, $type, $index);
+        $hits = $this->search($query, ['size' => 0], $range, $type, $index);
+
+        return $hits['count'] ?? 0;
     }
 
     /**

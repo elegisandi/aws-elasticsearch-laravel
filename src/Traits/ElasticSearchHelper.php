@@ -290,8 +290,8 @@ trait ElasticSearchHelper
             $text_type_props = $this->getMappingPropertiesByDataType($properties, 'text');
 
             // get keyword type properties
-            // included types: keyword, ip, integer, array
-            $keyword_type_props = $this->getMappingPropertiesByDataType($properties, ['keyword', 'ip', 'integer', 'array']);
+            // included types: keyword, ip, integer, short, long
+            $keyword_type_props = $this->getMappingPropertiesByDataType($properties, ['keyword', 'ip', 'integer', 'short', 'long']);
 
             // get boolean type properties
             $bool_type_props = $this->getMappingPropertiesByDataType($properties, 'boolean');

@@ -98,7 +98,9 @@ class ElasticSearch
 
         // set date range if not empty
         if (!empty($range)) {
-            $filters['must'][] = ['range' => $range];
+            foreach ($range as $field => $value) {
+                $filters['must'][] = ['range' => [$field => $value]];
+            }
         }
 
         // set bool query if filters not empty
